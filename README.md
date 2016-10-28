@@ -1,2 +1,2 @@
 # AutoIt script examples
-Simple script examples with the handling of AutoIt.
+Simple script examples with handling of AutoIt.
