@@ -21,9 +21,9 @@ For $i = 1 to _FileCountLines($file)
    $line = FileReadLine($file, $i)
    $iPing = Ping($line, 250)
     If $iPing Then ; If a value greater than 0 was returned then display the following message.
-         _FileWriteLog($hFile, "OK : " & $line & " : " & $iPing & " ms")
+         _FileWriteLog($hFile, "OK;" & $line & ";" & $iPing & " ms")
     Else
-        _FileWriteLog($hFile, "NOK : " & $line & " : " & "; Code " & @error) ; @error
+        _FileWriteLog($hFile, "NOK;" & $line & ";" & ";Code " & @error) ; @error
    EndIf
 Next
 
@@ -50,12 +50,11 @@ Local $sFindErrFour = "Code 4"
 Local $sReplaceErrFour = "Other errors"
 
 ; Logfile find and replace
-Local $sFileName = "PingList.log"
-Local $iRetval = _ReplaceStringInFile($sFileName, $sFind, $sReplace)
-Local $iRetval = _ReplaceStringInFile($sFileName, $sFindErrOne, $sReplaceErrOne)
-Local $iRetval = _ReplaceStringInFile($sFileName, $sFindErrTwo, $sReplaceErrTwo)
-Local $iRetval = _ReplaceStringInFile($sFileName, $sFindErrThree, $sReplaceErrThree)
-Local $iRetval = _ReplaceStringInFile($sFileName, $sFindErrFour, $sReplaceErrFour)
+Local $iRetval = _ReplaceStringInFile($hFile, $sFind, $sReplace)
+Local $iRetval = _ReplaceStringInFile($hFile, $sFindErrOne, $sReplaceErrOne)
+Local $iRetval = _ReplaceStringInFile($hFile, $sFindErrTwo, $sReplaceErrTwo)
+Local $iRetval = _ReplaceStringInFile($hFile, $sFindErrThree, $sReplaceErrThree)
+Local $iRetval = _ReplaceStringInFile($hFile, $sFindErrFour, $sReplaceErrFour)
 
 ; Log to csv
-FileMove("PingList.log", "PingList.csv", 1)
+FileMove($hFile, "PingList.csv", 1)
