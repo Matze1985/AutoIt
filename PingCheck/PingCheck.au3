@@ -8,7 +8,7 @@ FileOpen($file, 0)
 ; Write logfile
 $hFile = "PingList.log"
 FileOpen($hfile, 1)
-FileWriteLine ($hFile, "Time;State;System;Roundtrip-time;Error Msg" & @CRLF) ; CSV line 1 for filter
+FileWriteLine ($hFile, "Time;State;Host;Roundtrip-time;ErrorMsg" & @CRLF) ; CSV line 1 for filter
 
 ; Check textfile
 If $file = -1 Then
