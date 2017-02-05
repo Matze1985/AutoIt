@@ -1,0 +1,4 @@
+google.de
+spiegel.de
+bild.de
+crazyinfo.de
