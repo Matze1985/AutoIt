@@ -1,33 +1,51 @@
 #include <MsgBoxConstants.au3>
 #include <File.au3>
 
-; Read textfile
-$file= "PingList.txt"
-FileOpen($file, 0)
-
-; Write logfile
-$hFile = "PingList.log"
-FileOpen($hfile, 1)
-FileWriteLine ($hFile, "Time;State;Host;Roundtrip-time;ErrorMsg" & @CRLF) ; CSV line 1 for filter
+; textfile
+$file = "PingList.txt"
 
 ; Check textfile
-If $file = -1 Then
-    MsgBox(0, "Error", "Textfile not found!")
-    Exit
+Local $iFileExists = FileExists($file)
+
+If Not $iFileExists Then
+   MsgBox($MB_ICONERROR, "Error", "Wrong reading for the hosts textfile!")
+   Exit
 EndIf
 
-; Ping line by line
+; CSV file
+$fileCsv = @DesktopDir & "\PingList.csv"
+FileDelete ($fileCsv) ; remove the old file
+
+; CSV file tmp
+$fileCsvTmp = @TempDir & "\CsvMsg.tmp"
+
+; logfile
+$hFile = @TempDir & "\PingList.log"
+FileWriteLine ($hFile, "Time : Host : Description : Roundtrip-time : State") ; CSV line 1 for filter
+
+; Start loop
 For $i = 1 to _FileCountLines($file)
    $line = FileReadLine($file, $i)
-   $iPing = Ping($line, 250)
+
+   ; Split the string with ";"
+   $string = $line
+   $aSplit = StringSplit($string, ";")
+
+   ; Ping line by line
+   $iPing = Ping($aSplit[1], 250)
     If $iPing Then ; If a value greater than 0 was returned then display the following message.
-         _FileWriteLog($hFile, "OK;" & $line & ";" & $iPing & " ms")
+         _FileWriteLog($hFile, $aSplit[1] & " : " & $aSplit[2] & " : " & $iPing & " ms" & " : OK")
     Else
-        _FileWriteLog($hFile, "NOK;" & $line & ";" & ";Code " & @error) ; @error
+        _FileWriteLog($hFile, $aSplit[1] & " : " & $aSplit[2] & " : " & " : Code " & @error)
    EndIf
 Next
 
-FileClose($file & $hFile)
+Local $iFileExists = FileExists($fileCsv) ; Remove old csv file; Log to csv
+If $iFileExists Then
+   FileDelete ($hFile) ; remove the old logfile
+   MsgBox($MB_ICONERROR, "Error", "" & @CRLF & "File is open and exists with the same name, please change or delete the file and try again!")
+   Exit
+EndIf
 
 ; Logfile to CSV-File
 Local $sFind = " : "
@@ -56,5 +74,21 @@ Local $iRetval = _ReplaceStringInFile($hFile, $sFindErrTwo, $sReplaceErrTwo)
 Local $iRetval = _ReplaceStringInFile($hFile, $sFindErrThree, $sReplaceErrThree)
 Local $iRetval = _ReplaceStringInFile($hFile, $sFindErrFour, $sReplaceErrFour)
 
-; Log to csv
-FileMove($hFile, "PingList.csv", 1)
+FileMove($hFile, $fileCsv, 1) ; Log to csv
+FileCopy($fileCsv, $fileCsvTmp, 1)
+
+; Split the string from ";" , ";;" to " - "
+Local $sFind = ";;"
+Local $sReplace = " - "
+
+Local $sFindTwo = ";"
+Local $sReplaceTwo = " - "
+
+; CSV tmp file find and replace
+Local $iRetval = _ReplaceStringInFile($fileCsvTmp, $sFind, $sReplace)
+Local $iRetval = _ReplaceStringInFile($fileCsvTmp, $sFindTwo, $sReplaceTwo)
+
+;FileWriteLine($fileCsvTmp, "Result:" & @CRLF) ; CSV line 1 for filter
+Local $iRetval = _ReplaceStringInFile($fileCsvTmp, $sFind, $sReplace)
+_FileWriteToLine($fileCsvTmp, 1, "" , 1) ; Delete the first line from tmp file
+MsgBox($MB_ICONINFORMATION, "Finish", "File is ready!" & @CRLF & @CRLF & FileRead($fileCsvTmp))

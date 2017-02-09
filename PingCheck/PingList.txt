@@ -1,4 +1,4 @@
-google.de
-qertg.vv
-lausitz.wiki
-crazyinfo.de
+google.de;Google
+qertg.vv;fgfgg
+lausitz.wiki;Lausitz
+crazyinfo.de;Crazy
